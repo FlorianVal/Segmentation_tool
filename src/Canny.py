@@ -42,7 +42,7 @@ class Canny:
         else:
             self.is_canny_buttons = True
             for button in self.canny_buttons:
-                button.pack()
+                button.pack(side="bottom", fill="both", padx="10", pady="10")
         self.image_processor.change_canny_state()
         self.image_processor.process_output()
 

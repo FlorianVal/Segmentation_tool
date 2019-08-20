@@ -5,8 +5,7 @@ from PIL import ImageTk
 import cv2
 import numpy as np
 import imutils
-from src.Canny import Canny
-
+from src import *
 
 class MainWindow:
     def __init__(self):
@@ -22,7 +21,8 @@ class MainWindow:
         image_select_button.pack(side="bottom", fill="both", expand="yes", padx="10", pady="10")
 
         self.image_processing_methods = []
-        self.image_processing_methods.append(Canny(self.root, self.image_processor))
+        self.image_processing_methods.append(Canny.Canny(self.root, self.image_processor))
+        self.image_processing_methods.append(MorphTransform.MorphTransform(self.root, self.image_processor))
 
         self.root.mainloop()
 
@@ -48,7 +48,7 @@ class MainWindow:
 
             self.add_image_process_button()
         else:
-
+            # TODO when changing image fix window size
             # update the pannels
             self.panelA.configure(image=self.image_processor.image_to_display)
             self.panelB.configure(image=self.image_processor.output_to_display)
