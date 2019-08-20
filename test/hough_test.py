@@ -87,7 +87,7 @@ class ClassImage:
         mask = cv.morphologyEx(mask, cv.MORPH_CLOSE, kernel)
         make_contour_circle(mask)
         mask = cv.morphologyEx(mask, cv.MORPH_OPEN, kernel)
-        #make_contour_circle(mask)
+        # make_contour_circle(mask)
         result = cv.bitwise_and(img, img, mask=mask)
         # result = mask
         # result, contours, hierarchy = cv.findContours(mask, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
