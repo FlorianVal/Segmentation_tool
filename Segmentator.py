@@ -7,6 +7,7 @@ import numpy as np
 import imutils
 from src import *
 
+
 class MainWindow:
     def __init__(self):
         self.root = Tk()
@@ -14,38 +15,70 @@ class MainWindow:
         self.panelB = None
         self.image_processor = ImageProcessing(self)
 
+        self.next_button_coord_row = []
+        self.next_button_coord_row.append(1)
+        self.next_button_coord_row.append(1)
+        self.next_button_coord_row.append(1)
+
         panelA = None
         panelB = None
 
-        image_select_button = Button(self.root, text="Select an image", command=self.select_image)
-        image_select_button.pack(side="bottom", fill="both", expand="yes", padx="10", pady="10")
+        self.root.rowconfigure(0, weight=1)
+        self.root.columnconfigure(0, weight=1)
+
+        self.left_frame = Frame(self.root, bg='cyan')
+        self.right_frame = Frame(self.root, width=250)
+
+        self.image_select_button = Button(self.root, text="Select an image", command=self.select_image)
+        self.image_select_button.grid(row=0, column=0, sticky="nesw")
 
         self.image_processing_methods = []
-        self.image_processing_methods.append(Canny.Canny(self.root, self.image_processor))
-        self.image_processing_methods.append(MorphTransform.MorphTransform(self.root, self.image_processor))
+        self.image_processing_methods.append(Canny.Canny(self.root, self.image_processor, self))
+        self.image_processing_methods.append(MorphTransform.MorphTransform(self.root, self.image_processor, self))
 
         self.root.mainloop()
 
     def select_image(self):
-        path = filedialog.askopenfilename()
+        # path = filedialog.askopenfilename()
+        # DEBUG
+        path = "/workspace/workspace/hammer.jpg"
         if len(path) > 0:
             self.image_processor.set_image(path)
 
     def add_image_process_button(self):
         # called when an image is selected to display buttons
         for processor in self.image_processing_methods:
-            processor.add_main_button()
+            # column 0 for main buttons
+            processor.add_main_button(self.next_button_coord_row[0], 0)
+            # TODO blinde if x > grid size
+            self.next_button_coord_row[0] += 1
+
+    def grid_configure(self):
+        self.root.geometry("800x600")
+        self.right_frame.grid_rowconfigure(0, weight=1)
+        self.right_frame.grid_rowconfigure(1, weight=1)
+        self.right_frame.grid_columnconfigure(0, weight=1)
+
+        for x in range(10):
+            self.left_frame.grid_columnconfigure(x, weight=1)
+        for y in range(10):
+            self.left_frame.grid_rowconfigure(y, weight=1)
 
     def display_images(self):
         if self.panelA is None or self.panelB is None:
-            self.panelA = Label(image=self.image_processor.image_to_display)
+            self.right_frame.grid(column=1, sticky="e")
+            self.left_frame.grid(column=0)
+
+            self.panelA = Label(self.right_frame, image=self.image_processor.image_to_display)
             self.panelA.image = self.image_processor.image_to_display
-            self.panelA.pack(side="left", padx=10, pady=10)
+            self.panelA.grid(row=0, column=0, sticky="ne")
 
-            self.panelB = Label(image=self.image_processor.output_to_display)
+            self.panelB = Label(self.right_frame, image=self.image_processor.output_to_display)
             self.panelB.image = self.image_processor.output_to_display
-            self.panelB.pack(side="right", padx=10, pady=10)
+            self.panelB.grid(row=1, column=0, sticky="se")
 
+            self.image_select_button.grid(self.left_frame, row=0, column=2, sticky="nsew")
+            self.grid_configure()
             self.add_image_process_button()
         else:
             # TODO when changing image fix window size
@@ -92,8 +125,8 @@ class ImageProcessing:
         image_cv_tmp = cv2.cvtColor(self.image_cv, cv2.COLOR_BGR2RGB)
         # self.output_cv = cv2.cvtColor(self.output_cv, cv2.COLOR_BGR2RGB)
 
-        self.image_to_display = ImageTk.PhotoImage(Image.fromarray(image_cv_tmp))
-        self.output_to_display = ImageTk.PhotoImage(Image.fromarray(self.output_cv))
+        self.image_to_display = ImageTk.PhotoImage(Image.fromarray(image_cv_tmp).resize((250, 250)))
+        self.output_to_display = ImageTk.PhotoImage(Image.fromarray(self.output_cv).resize((250, 250)))
         self.main_window.display_images()
 
     def __del__(self):

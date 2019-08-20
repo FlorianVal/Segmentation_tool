@@ -5,8 +5,9 @@ import numpy as np
 
 
 class MorphTransform:
-    def __init__(self, root, image_processor):
+    def __init__(self, root, image_processor, main_window):
         self.root = root
+        self.main_window = main_window
         self.image_processor = image_processor
         self.is_morph_transform_buttons = False
 
@@ -16,9 +17,9 @@ class MorphTransform:
         self.morph_check_buttons = []
         self.morph_check_buttons.append(Checkbutton(self.root, text="Erosion", command=self.image_processor.process_output))
 
-    def add_main_button(self):
+    def add_main_button(self, x, y):
         check_morph_button = Checkbutton(self.root, text="Morphological Transform", command=self.show_morph_options)
-        check_morph_button.pack(side="bottom", fill="both", padx="10", pady="10")
+        check_morph_button.grid(row=x, column=y, sticky="w")
 
     def show_morph_options(self):
         if self.is_morph_transform_buttons:

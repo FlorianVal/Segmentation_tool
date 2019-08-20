@@ -4,8 +4,9 @@ import cv2
 
 
 class Canny:
-    def __init__(self, root, image_processor):
+    def __init__(self, root, image_processor, main_window):
         self.root = root
+        self.main_window = main_window
         self.image_processor = image_processor
         self.is_canny_buttons = False
 
@@ -30,19 +31,21 @@ class Canny:
         self.canny_buttons.append(Scale(self.root, from_=0, to=200, orient=HORIZONTAL, label="gradient",
                                         variable=self.image_processor.Canny_gradient, command=self.image_processor.process_output))
 
-    def add_main_button(self):
+    def add_main_button(self, x, y):
         check_canny_button = Checkbutton(self.root, text="Canny Transform", command=self.show_canny_options)
-        check_canny_button.pack(side="bottom", fill="both", padx="10", pady="10")
+        check_canny_button.grid(row=x, column=y, sticky="w")
 
     def show_canny_options(self):
         if self.is_canny_buttons:
             self.is_canny_buttons = False
             for button in self.canny_buttons:
-                button.pack_forget()
+                button.grid_forget()
+                self.main_window.next_button_coord_row[1] -= 2
         else:
             self.is_canny_buttons = True
             for button in self.canny_buttons:
-                button.pack(side="bottom", fill="both", padx="10", pady="10")
+                button.grid(row=self.main_window.next_button_coord_row[1], column=1, sticky='wn', rowspan=1)
+                self.main_window.next_button_coord_row[1] += 2
         self.image_processor.change_canny_state()
         self.image_processor.process_output()
 
