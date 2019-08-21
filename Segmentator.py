@@ -7,22 +7,23 @@ import numpy as np
 import imutils
 from src import *
 
+
 class MainWindow:
     def __init__(self):
+        self.frame_list = []
         self.root = Tk()
         self.panelA = None
         self.panelB = None
         self.image_processor = ImageProcessing(self)
+        self.tool_window = None
 
         panelA = None
         panelB = None
 
+        self.image_processing_methods = []
+
         image_select_button = Button(self.root, text="Select an image", command=self.select_image)
         image_select_button.pack(side="bottom", fill="both", expand="yes", padx="10", pady="10")
-
-        self.image_processing_methods = []
-        self.image_processing_methods.append(Canny.Canny(self.root, self.image_processor))
-        self.image_processing_methods.append(MorphTransform.MorphTransform(self.root, self.image_processor))
 
         self.root.mainloop()
 
@@ -36,7 +37,17 @@ class MainWindow:
         for processor in self.image_processing_methods:
             processor.add_main_button()
 
+    def create_tool_window(self):
+
+        self.tool_window = Toplevel(self.root)
+        self.frame_list.append(Frame(self.tool_window, background="black"))
+        self.frame_list.append(Frame(self.tool_window, background="yellow"))
+        self.frame_list.append(Frame(self.tool_window, background="blue"))
+        for frame in self.frame_list:
+            frame.pack(side='left', padx=10, pady=10)
+
     def display_images(self):
+
         if self.panelA is None or self.panelB is None:
             self.panelA = Label(image=self.image_processor.image_to_display)
             self.panelA.image = self.image_processor.image_to_display
@@ -45,6 +56,10 @@ class MainWindow:
             self.panelB = Label(image=self.image_processor.output_to_display)
             self.panelB.image = self.image_processor.output_to_display
             self.panelB.pack(side="right", padx=10, pady=10)
+
+            self.create_tool_window()
+            self.image_processing_methods.append(Canny.Canny(self.tool_window, self.frame_list, self.image_processor))
+            self.image_processing_methods.append(MorphTransform.MorphTransform(self.tool_window, self.frame_list, self.image_processor))
 
             self.add_image_process_button()
         else:
