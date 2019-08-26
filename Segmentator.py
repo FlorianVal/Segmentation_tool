@@ -14,7 +14,8 @@ class MainWindow:
         self.root = Tk()
         self.panelA = None
         self.panelB = None
-        self.image_processor = ImageProcessing(self)
+        self.event_handler = EventHandler.EventHandler(self)
+        self.image_processor = ImageProcessing(self, self.event_handler)
         self.tool_window = None
 
         panelA = None
@@ -45,6 +46,9 @@ class MainWindow:
         self.frame_list.append(Frame(self.tool_window, background="blue"))
         for frame in self.frame_list:
             frame.pack(side='left', padx=10, pady=10)
+        self.image_processing_methods.append(Canny.Canny(self.tool_window, self.frame_list, self.image_processor))
+        self.image_processing_methods.append(MorphTransform.MorphTransform(self.tool_window, self.frame_list, self.image_processor))
+        self.image_processing_methods.append(ColorTools.ColorTools(self.tool_window, self.frame_list, self.image_processor, self.event_handler))
 
     def display_images(self):
 
@@ -54,12 +58,11 @@ class MainWindow:
             self.panelA.pack(side="left", padx=10, pady=10)
 
             self.panelB = Label(image=self.image_processor.output_to_display)
+            self.panelB.bind("<Button-1>", self.event_handler.click_event)
             self.panelB.image = self.image_processor.output_to_display
             self.panelB.pack(side="right", padx=10, pady=10)
 
             self.create_tool_window()
-            self.image_processing_methods.append(Canny.Canny(self.tool_window, self.frame_list, self.image_processor))
-            self.image_processing_methods.append(MorphTransform.MorphTransform(self.tool_window, self.frame_list, self.image_processor))
 
             self.add_image_process_button()
         else:
@@ -75,8 +78,9 @@ class MainWindow:
 
 
 class ImageProcessing:
-    def __init__(self, MainWindow):
-        self.main_window = MainWindow
+    def __init__(self, main_window, event_handler):
+        self.main_window = main_window
+        self.event_handler = event_handler
 
         self.image_cv = None
         self.image_to_display = None
@@ -97,7 +101,7 @@ class ImageProcessing:
             self.image_cv = imutils.resize(self.image_cv, height=600)
 
     def process_output(self, args=None):
-        self.output_cv = self.image_cv
+        self.output_cv = np.copy(self.image_cv)
         if len(self.transformation_to_do) > 0:
             for transformation in self.transformation_to_do:
                 transformation()

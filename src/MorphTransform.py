@@ -54,7 +54,7 @@ class MorphTransform:
                 button.pack(side="top", fill="both", padx="10", pady="10")
 
     def show_morph_sub_options(self):
-        # show only if reosion or dilation is on
+        # show only if erosion or dilation is on
         if self.morph_check_intvar[0].get() == 0 and self.morph_check_intvar[1].get() == 0:
             self.morph_scale_sub_button.pack_forget()
         else:
