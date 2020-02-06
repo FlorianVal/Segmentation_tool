@@ -49,6 +49,8 @@ class MainWindow:
         self.image_processing_methods.append(Canny.Canny(self.tool_window, self.frame_list, self.image_processor))
         self.image_processing_methods.append(MorphTransform.MorphTransform(self.tool_window, self.frame_list, self.image_processor))
         self.image_processing_methods.append(ColorTools.ColorTools(self.tool_window, self.frame_list, self.image_processor, self.event_handler))
+        self.image_processing_methods.append(ColorRange.ColorRange(self.tool_window, self.frame_list, self.image_processor))
+
 
     def display_images(self):
 
@@ -102,6 +104,7 @@ class ImageProcessing:
 
     def process_output(self, args=None):
         self.output_cv = np.copy(self.image_cv)
+        print(self.transformation_to_do)
         if len(self.transformation_to_do) > 0:
             for transformation in self.transformation_to_do:
                 transformation()
