@@ -7,7 +7,7 @@ To run it you need to have Docker installed and run :
 
 ```
 docker build . -t segm_tool
-docker run segm_tool
+docker run -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix segm_tool
 ```
 
 ## Implemented features:
